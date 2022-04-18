@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 data = pd.read_csv("sed.txt", sep = ",", header = None, skiprows = 2)
 data.columns = ["wv", "lm"]
 
-# print(data)
 
 # Determining where the wavelength values ae correct, and then pulling the upper and lower bound values out via an intermediate array
 bounds = np.where((data["wv"] >= 10) & (data["wv"] <= 1000))
@@ -15,36 +14,37 @@ boundsArr = bounds[0]
 upper = boundsArr[-1]
 lower = boundsArr[0]
 
-data["wv"] *= u.micron
-data["lm"] *= u.Lsun/u.micron
+# Creating two lists containing the values of luminosity and wavelength in between the bounds
+wvList = list()
+lmList = list()
 
-# print (upper, lower)
+i = lower
+while (i < upper):
+    wvList.append(data["wv"][i])
+    lmList.append(data["lm"][i])
+    i += 1
 
-#np.loadtxt("sed.txt", delimiter = ",")
+    
+# Defining new arrays with units attached to the values
+wvUnits = wvList * u.micron
+lmUnits = lmList * u.Lsun/u.micron
 
+# Calculating the integral with the given units
+integral = np.trapz(np.flip(lmUnits), np.flip(wvUnits))
+print(integral)
 
-
-# wv = data[:, 0] #Wavelength
-# lm = data[:, 1] #Luminosity
-
-# x = np.where((wv > 10) & (wv < 1000))
-
-# tempOne  = x[0] #Returns an array
-# tempTwo = x[-1]
-
-# lowerBound = tempOne[0]
-# upperBound = tempTwo[-1]
-# integral = np.trapz(np.flip(tempTwo), np.flip(tempOne))
-
-# print(lowerBound)
-# print(upperBound)
-# print(integral)
+# Converting the integral to the desired units
+ergIntegral = integral.to(u.erg/u.s)
+print(ergIntegral)
 
 # Plotting the data
 plt.plot(data["wv"], data["lm"])
 plt.xscale("log")
 plt.yscale("log")
+plt.xlabel("Wavelength")
+plt.ylabel("Luminosity")
+plt.bar(wvList, lmList, color = "red")
 
 plt.show()
 
-plt.savefig('Test-pandya_maalav_hw7.png', dpi = 300)
+plt.savefig('pandya_maalav_hw7.png', dpi = 300)
