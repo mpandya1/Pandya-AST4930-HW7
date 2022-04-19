@@ -43,6 +43,7 @@ plt.xscale("log")
 plt.yscale("log")
 plt.xlabel("Wavelength")
 plt.ylabel("Luminosity")
+# plt.xlim(data["wv"].min(), data["wv"].max())
 plt.bar(wvList, lmList, color = "red")
 
 plt.show()
